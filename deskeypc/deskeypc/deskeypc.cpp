@@ -55,14 +55,6 @@ std::vector<char> asciiBinToasciiHex(std::vector<char> charArray);
 
 int main(int argc, char* argv[])
 {
-    int a = 0;
-    int b = 0;
-    int c = 1;
-    int d = 1;
-    int abcd = (a << 3) | (b << 2) | (c << 1) | (d << 0);
-    printf("%d %x", abcd, abcd);
-    //return 0;
-
     int* pTable;
     int pTableSize;
     int inputSize;
@@ -138,7 +130,7 @@ int main(int argc, char* argv[])
     }
 
     // vectorize the argv, NOTE: MSB=0... LSB=31
-    for (int i = 0; i < strlen(argv[ARG_INPUT_VALUE]); i++)
+    for (int i = 0; i < (int)strlen(argv[ARG_INPUT_VALUE]); i++)
     {
         input.push_back(argv[ARG_INPUT_VALUE][i]);
     }
@@ -148,8 +140,6 @@ int main(int argc, char* argv[])
         // overwrite input
         input = asciiHexToasciiBinary(input);
     }
-    dumpArray(input);
-    std::cout << "input size: " << input.size() << std::endl;
 
     // add parity bits if pc1
     // this step takes the 56 bit key and adds parity bits at
@@ -157,7 +147,7 @@ int main(int argc, char* argv[])
     std::vector<char> expansion;
     if (pTable == pc1)
     {
-        for (int i = 0; i < input.size(); i++)
+        for (int i = 0; i < (int)input.size(); i++)
         {
             expansion.push_back(input[i]);
 
@@ -167,6 +157,16 @@ int main(int argc, char* argv[])
                 expansion.push_back('0');
             }
         }
+
+        // pre-expansion
+        std::cout << "input " << input.size() << "-bits:" << std::endl;
+        dumpArray(input);
+        std::cout << " (0x";
+        dumpArray(asciiBinToasciiHex(input));
+        std::cout << ")";
+        std::cout << std::endl;
+
+        std::cout << "expanded key, parity bits added to input" << std::endl;
 
         // use expansion now
         input = expansion;
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
     dumpArray(input);
     std::cout << " (0x";
     dumpArray(asciiBinToasciiHex(input));
-    std::cout << ")" << std::endl;
+    std::cout << ")";
     std::cout << std::endl;
 
     // print the output MSB...LSB
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
     dumpArray(output);
     std::cout << " (0x";
     dumpArray(asciiBinToasciiHex(output));
-    std::cout << ")" << std::endl;
+    std::cout << ")";
     std::cout << std::endl;
 }
 
@@ -214,7 +214,7 @@ std::vector<char> asciiBinToasciiHex(std::vector<char> charArray)
     int a, b, c, d = 0;
     std::vector<char> hexArray;
 
-    for (int i = 0; i < charArray.size(); i+=4)
+    for (int i = 0; i < (int)charArray.size(); i+=4)
     {
         if (charArray[i + 0] == '1') a = 1; else a = 0;
         if (charArray[i + 1] == '1') b = 1; else b = 0;
